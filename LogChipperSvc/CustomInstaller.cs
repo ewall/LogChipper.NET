@@ -37,7 +37,7 @@ namespace LogChipperSvc
             string param2 = Context.Parameters["param2"];
             string param3 = Context.Parameters["param3"];
 
-            string path = System.IO.Path.Combine(targetDirectory, "app.config");
+            string path = System.IO.Path.Combine(targetDirectory, "LogChipperSvc.exe.config");
             System.Xml.XmlDocument xDoc = new System.Xml.XmlDocument();
             xDoc.Load(path);
 

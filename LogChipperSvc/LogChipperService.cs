@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
+﻿using System.ServiceProcess;
 
 namespace LogChipperSvc
 {
@@ -18,6 +11,13 @@ namespace LogChipperSvc
 
         protected override void OnStart(string[] args)
         {
+            Syslog.Client c = new Syslog.Client();
+            c.HostIp = "127.0.0.1";
+            int facility = (int)Syslog.Facility.Syslog;
+            int level = (int)Syslog.Level.Warning;
+            string text = "Hello from LogChipperSvc";
+            c.Send(new Syslog.Message(facility, level, text));
+            c.Close();
         }
 
         protected override void OnStop()
