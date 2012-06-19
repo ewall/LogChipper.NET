@@ -49,5 +49,14 @@ namespace LogChipperSvc.Properties {
                 return ((string)(this["syslogPort"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public int pauseInMilleseconds {
+            get {
+                return ((int)(this["pauseInMilleseconds"]));
+            }
+        }
     }
 }

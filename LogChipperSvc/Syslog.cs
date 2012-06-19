@@ -4,7 +4,6 @@ using System.Net.Sockets;
 
 namespace Syslog
 {
-
     public enum Level
     {
         Emergency = 0,
@@ -39,37 +38,33 @@ namespace Syslog
         Local7 = 17,
     }
 
-
-    public class Message
+    // TODO: create event delegate & handler
+    public class SyslogEventArgs : EventArgs
     {
-        private int _facility;
-        public int Facility
+        public readonly string msg;
+        public SyslogEventArgs(string message)
         {
-            get { return _facility; }
-            set { _facility = value; }
-        }
-        private int _level;
-        public int Level
-        {
-            get { return _level; }
-            set { _level = value; }
-        }
-        private string _text;
-        public string Text
-        {
-            get { return _text; }
-            set { _text = value; }
-        }
-        public Message() { }
-        public Message(int facility, int level, string text)
-        {
-            _facility = facility;
-            _level = level;
-            _text = text;
+            msg = message;
         }
     }
 
-    // need this helper class to expose the Active propery of UdpClient
+    // TODO: can we set the default Facility & Level to be used by the simple Send() method?
+    public class Message
+    {
+        public int Facility { get; set; }
+        public int Level { get; set; }
+        public string Text { get; set; }
+
+        public Message() { }
+        public Message(int facility, int level, string text)
+        {
+            Facility = facility;
+            Level = level;
+            Text = text;
+        }
+    }
+
+    // need this helper class to expose the "Active" propery of UdpClient
     public class Helper : System.Net.Sockets.UdpClient
     {
         public Helper() : base() { }
@@ -91,6 +86,7 @@ namespace Syslog
         private IPAddress ipAddress;
         private IPEndPoint ipLocalEndPoint;
         private Syslog.Helper helper;
+
         public Client()
         {
             ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
@@ -130,6 +126,7 @@ namespace Syslog
             }
         }
 
+        // TODO: simplify this usage, perhaps with an overload that takes only the message text
         public void Send(Syslog.Message message)
         {
             if (!helper.IsActive)
@@ -140,7 +137,7 @@ namespace Syslog
                 byte[] bytes = System.Text.Encoding.ASCII.GetBytes(msg);
                 helper.Send(bytes, bytes.Length);
             }
-            else throw new Exception("Syslog client Socket is not connected. Please set the host IP");
+            else throw new Exception("Syslog client socket is not connected. Please double-check that the host IP and port are set correctly.");
         }
     }
 
@@ -153,8 +150,8 @@ namespace Syslog
             Syslog.Client c = new Syslog.Client();
             try
             {
-                //c.Port= 1200;
                 c.HostIp = "127.0.0.1";  // syslogd on local machine
+                //c.Port= 1200;
                 int facility = (int)Syslog.Facility.Syslog;
                 int level = (int)Syslog.Level.Warning;
                 string text = (args.Length > 0) ? args[0] : "Hello, Syslog World.";
