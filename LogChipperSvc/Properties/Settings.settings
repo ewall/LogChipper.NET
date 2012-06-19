@@ -11,8 +11,14 @@
     <Setting Name="syslogPort" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="pauseInMilleseconds" Type="System.Int32" Scope="Application">
+    <Setting Name="pauseInMilliseconds" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="eventLogName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Application</Value>
+    </Setting>
+    <Setting Name="eventLogSource" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">LogChipper.NET</Value>
     </Setting>
   </Settings>
 </SettingsFile>

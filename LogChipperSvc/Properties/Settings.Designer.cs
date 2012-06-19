@@ -53,9 +53,27 @@ namespace LogChipperSvc.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("500")]
-        public int pauseInMilleseconds {
+        public int pauseInMilliseconds {
             get {
-                return ((int)(this["pauseInMilleseconds"]));
+                return ((int)(this["pauseInMilliseconds"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Application")]
+        public string eventLogName {
+            get {
+                return ((string)(this["eventLogName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LogChipper.NET")]
+        public string eventLogSource {
+            get {
+                return ((string)(this["eventLogSource"]));
             }
         }
     }

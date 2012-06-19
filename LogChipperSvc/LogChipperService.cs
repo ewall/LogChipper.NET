@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
 
@@ -7,17 +8,33 @@ namespace LogChipperSvc
 {
     public partial class LogChipperService : ServiceBase
     {
+        private StreamReader reader;
+
         public LogChipperService()
         {
             InitializeComponent();
         }
 
+        [STAThread]
         protected override void OnStart(string[] args)
         {
+            // prep for writing to local event log
+            string eventLogName = Properties.Settings.Default.eventLogName;
+            string eventLogSource = Properties.Settings.Default.eventLogSource;
+            string machineName = ".";
 
-            // TODO: create event for posting to syslog
-            // TODO: create event for writing to local event log
+            /* WARNING: this will definately fail to create the source if the account lacks administrator rights.
+             * Furthermore, it will probably fail on the first execution due to the lag in creating it. */
 
+            // TODO: solve the above problem by creating this EventLog source during the installation :D
+
+            if (!EventLog.SourceExists(eventLogSource, machineName))
+                EventLog.CreateEventSource(eventLogSource, eventLogName, machineName);
+            EventLog eventLogger = new EventLog(eventLogName, machineName, eventLogSource);
+
+            eventLogger.WriteEntry("LogChipper.NET service starting up", EventLogEntryType.Information, 0);
+
+            // TODO: prep for posting to syslog
             //Syslog.Client c = new Syslog.Client();
             //c.HostIp = "127.0.0.1";
             //int facility = (int)Syslog.Facility.Syslog;
@@ -28,13 +45,13 @@ namespace LogChipperSvc
 
             // fetch properties from exe.config, for convenience
             string fileName = Properties.Settings.Default.logFilePath;
-            int pauseInMS = Properties.Settings.Default.pauseInMilleseconds;
+            int pauseInMS = Properties.Settings.Default.pauseInMilliseconds;
 
             try
             {
                 /* If you try to use the StreamReader's constructor to open a file in use by another process, you will get an exception.
                  * Here we create the FileStream to enable reading even if the file is open for writing, which is the expected use. */
-                StreamReader reader = new StreamReader(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+                reader = new StreamReader(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
                 {
                     //start at the end of the file
@@ -63,12 +80,13 @@ namespace LogChipperSvc
             }
             catch (IOException e)
             {
+                eventLogger.WriteEntry(e.ToString(), EventLogEntryType.Warning, 2);
                 // TODO: pause, then try loading the file again; write to event log
                 // Q: should we stop after a certain number of failures?
             }
             catch (Exception e)
             {
-                // TODO: write to Event Log
+                eventLogger.WriteEntry(e.ToString(), EventLogEntryType.Error, 1);
                 // Q: do we want to quit or continue here?
             }
             finally
@@ -80,8 +98,8 @@ namespace LogChipperSvc
 
         protected override void OnStop()
         {
-            //if (reader != null)
-            //    reader.Close();
+            if (reader != null)
+                reader.Close();
         }
     }
 }

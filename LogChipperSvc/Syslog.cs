@@ -38,17 +38,6 @@ namespace Syslog
         Local7 = 17,
     }
 
-    // TODO: create event delegate & handler
-    public class SyslogEventArgs : EventArgs
-    {
-        public readonly string msg;
-        public SyslogEventArgs(string message)
-        {
-            msg = message;
-        }
-    }
-
-    // TODO: can we set the default Facility & Level to be used by the simple Send() method?
     public class Message
     {
         public int Facility { get; set; }
@@ -64,7 +53,7 @@ namespace Syslog
         }
     }
 
-    // need this helper class to expose the "Active" propery of UdpClient
+    // Helper class exposes the UdpClient's "Active" propery
     public class Helper : System.Net.Sockets.UdpClient
     {
         public Helper() : base() { }
@@ -100,18 +89,6 @@ namespace Syslog
             get { return helper.IsActive; }
         }
 
-        public void Close()
-        {
-            if (helper.IsActive) helper.Close();
-        }
-
-        private int _port = 514;
-        public int Port
-        {
-            set { _port = value; }
-            get { return _port; }
-        }
-
         private string _hostIp = null;
         public string HostIp
         {
@@ -126,7 +103,28 @@ namespace Syslog
             }
         }
 
-        // TODO: simplify this usage, perhaps with an overload that takes only the message text
+        private int _port = 514;
+        public int Port
+        {
+            get { return _port; }
+            set { _port = value; }
+        }
+
+        private int _defaultFacility = (int)Facility.Syslog;
+        public int DefaultFacility
+        {
+            get { return _defaultFacility; }
+            set { _defaultFacility = DefaultFacility; }
+        }
+
+        private int _defaultLevel = (int)Level.Warning;
+        public int DefaultLevel
+        {
+            get { return _defaultLevel; }
+            set { _defaultLevel = DefaultLevel; }
+        }
+
+        // Send() original method
         public void Send(Syslog.Message message)
         {
             if (!helper.IsActive)
@@ -139,8 +137,26 @@ namespace Syslog
             }
             else throw new Exception("Syslog client socket is not connected. Please double-check that the host IP and port are set correctly.");
         }
+
+        // Send() simplified overload uses previously set default facility & level
+        public void Send(string text)
+        {
+            Send(new Message(_defaultFacility, _defaultLevel, text));
+        }
+        
+        // destructors
+        public void Close()
+        {
+            if (helper.IsActive) helper.Close();
+        }
+
+        public ~ Client()
+        {
+            Close();
+        }
     }
 
+    // TODO: extend & clarify examples
     public class TestClient
     {
 
