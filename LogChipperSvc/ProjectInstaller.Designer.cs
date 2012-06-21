@@ -55,5 +55,7 @@
 
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller1;
         private System.ServiceProcess.ServiceInstaller serviceInstaller1;
+
+        public System.Configuration.Install.InstallEventHandler serviceProcessInstaller1_AfterInstall { get; set; }
     }
 }

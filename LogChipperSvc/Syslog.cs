@@ -174,7 +174,7 @@ namespace Syslog
             if (helper.IsActive) helper.Close();
         }
 
-        public ~ Client()
+        ~Client()
         {
             Close();
         }
@@ -190,7 +190,7 @@ namespace Syslog
             Syslog.Client c = new Syslog.Client("127.0.0.1", 514, (int)Syslog.Facility.Syslog, (int)Syslog.Level.Warning);
             try
             {
-                c.Send(new Syslog.Message(facility, level, text));
+                c.Send("This is a test of the syslog client code.");
             }
             catch (System.Exception e)
             {

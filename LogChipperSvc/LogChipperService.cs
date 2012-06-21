@@ -28,7 +28,7 @@ namespace LogChipperSvc
              * Furthermore, due to the lag in creating the source, the first attempt to write to it might fail.
              * Thus, we should have already done this during the program's installation, this is just in case it was missed. */
             if (!EventLog.SourceExists(eventLogSource, machineName))
-                EventLog.CreateEventSource(eventLogSource, eventLogName, machineName);
+                EventLog.CreateEventSource(eventLogSource, eventLogName);
             eventLogger = new EventLog(eventLogName, machineName, eventLogSource);
             eventLogger.WriteEntry("LogChipper syslog forwarding service has started", EventLogEntryType.Information, 0);
 

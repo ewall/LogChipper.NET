@@ -12,23 +12,6 @@ namespace LogChipperSvc
             InitializeComponent();
         }
 
-        // from http://raquila.com/software/configure-app-config-application-settings-during-msi-install/
-        //public override void Install(System.Collections.IDictionary stateSaver)
-        //{
-        //    base.Install(stateSaver);
-        //    string targetDirectory = Context.Parameters["targetdir"];
-        //    string param1 = Context.Parameters["param1"];
-        //    string param2 = Context.Parameters["param2"];
-        //    string param3 = Context.Parameters["param3"];  
-        //    //System.Diagnostics.Debugger.Break();
-        //    string exePath = string.Format("{0}LogChipperSvc.exe", targetDirectory);
-        //    Configuration config = ConfigurationManager.OpenExeConfiguration(exePath);
-        //    config.AppSettings.Settings["logFilePath"].Value = param1;
-        //    config.AppSettings.Settings["syslogServer"].Value = param2;
-        //    config.AppSettings.Settings["syslogPort"].Value = param3;
-        //    config.Save();
-        //}
-
         // from http://stackoverflow.com/questions/918565/updating-appname-config-file-from-an-custom-installer-class-action
         public override void Install(System.Collections.IDictionary stateSaver)
         {
@@ -66,7 +49,7 @@ namespace LogChipperSvc
             string eventLogSource = node5.InnerText;
 
             if (!EventLog.SourceExists(eventLogSource, machineName))
-                EventLog.CreateEventSource(eventLogSource, eventLogName, machineName);       
+                EventLog.CreateEventSource(eventLogSource, eventLogName);       
         }
 
     }
