@@ -4,6 +4,7 @@ using System.Net.Sockets;
 
 namespace Syslog
 {
+    #region datastructs
     public enum Level
     {
         Emergency = 0,
@@ -52,43 +53,58 @@ namespace Syslog
             Text = text;
         }
     }
-
-    // Helper class exposes the UdpClient's "Active" propery
-    public class Helper : System.Net.Sockets.UdpClient
-    {
-        public Helper() : base() { }
-        public Helper(IPEndPoint ipe) : base(ipe) { }
-        ~Helper()
-        {
-            if (this.Active) this.Close();
-        }
-
-        public bool IsActive
-        {
-            get { return this.Active; }
-        }
-    }
+    #endregion datastructs
 
     public class Client
     {
         private IPHostEntry ipHostInfo;
         private IPAddress ipAddress;
         private IPEndPoint ipLocalEndPoint;
-        private Syslog.Helper helper;
+        private Syslog.Client.Helper helper;
 
+        #region helper
+        // Helper class exposes the UdpClient's "Active" propery
+        private class Helper : System.Net.Sockets.UdpClient
+        {
+            public Helper() : base() { }
+            public Helper(IPEndPoint ipe) : base(ipe) { }
+            ~Helper()
+            {
+                if (this.Active) this.Close();
+            }
+
+            public bool IsActive
+            {
+                get { return this.Active; }
+            }
+        }
+        #endregion helper
+
+        #region constructors
         public Client()
         {
             ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             ipAddress = ipHostInfo.AddressList[0];
             ipLocalEndPoint = new IPEndPoint(ipAddress, 0);
-            helper = new Syslog.Helper(ipLocalEndPoint);
+            helper = new Syslog.Client.Helper(ipLocalEndPoint);
         }
 
-        public bool IsActive
+        public Client(string server, int port)
+            : this()
         {
-            get { return helper.IsActive; }
+            this._hostIp = server;
+            this._port = port;
         }
 
+        public Client(string server, int port, int facility, int level)
+            : this(server, port)
+        {
+            this._defaultFacility = facility;
+            this._defaultLevel = level;
+        }
+        #endregion constructors
+
+        #region properties
         private string _hostIp = null;
         public string HostIp
         {
@@ -123,6 +139,13 @@ namespace Syslog
             get { return _defaultLevel; }
             set { _defaultLevel = DefaultLevel; }
         }
+        #endregion properties
+
+        #region methods
+        public bool IsActive
+        {
+            get { return helper.IsActive; }
+        }
 
         // Send() original method
         public void Send(Syslog.Message message)
@@ -143,8 +166,9 @@ namespace Syslog
         {
             Send(new Message(_defaultFacility, _defaultLevel, text));
         }
-        
-        // destructors
+        #endregion methods
+
+        #region destructors
         public void Close()
         {
             if (helper.IsActive) helper.Close();
@@ -154,35 +178,28 @@ namespace Syslog
         {
             Close();
         }
+        #endregion destuctors
     }
 
-    // TODO: extend & clarify examples
-    public class TestClient
+    public class DemoClient
     {
 
         public static void Main(string[] args)
         {
 
-            Syslog.Client c = new Syslog.Client();
+            Syslog.Client c = new Syslog.Client("127.0.0.1", 514, (int)Syslog.Facility.Syslog, (int)Syslog.Level.Warning);
             try
             {
-                c.HostIp = "127.0.0.1";  // syslogd on local machine
-                //c.Port= 1200;
-                int facility = (int)Syslog.Facility.Syslog;
-                int level = (int)Syslog.Level.Warning;
-                string text = (args.Length > 0) ? args[0] : "Hello, Syslog World.";
-
                 c.Send(new Syslog.Message(facility, level, text));
             }
-            catch (System.Exception ex1)
+            catch (System.Exception e)
             {
-                Console.WriteLine("Exception! " + ex1);
+                Console.WriteLine(e.ToString());
             }
             finally
             {
                 c.Close();
             }
-
         }
     }
 }

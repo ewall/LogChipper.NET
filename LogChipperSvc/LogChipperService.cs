@@ -8,6 +8,8 @@ namespace LogChipperSvc
 {
     public partial class LogChipperService : ServiceBase
     {
+        private EventLog eventLogger;
+        private Syslog.Client syslogForwarder;
         private StreamReader reader;
 
         public LogChipperService()
@@ -22,30 +24,47 @@ namespace LogChipperSvc
             string eventLogName = Properties.Settings.Default.eventLogName;
             string eventLogSource = Properties.Settings.Default.eventLogSource;
             string machineName = ".";
-
-            /* WARNING: this will definately fail to create the source if the account lacks administrator rights.
-             * Furthermore, it will probably fail on the first execution due to the lag in creating it. */
-
-            // TODO: solve the above problem by creating this EventLog source during the installation :D
-
+            /* Warning: this will definately fail to create the source if the account lacks administrator/UAC rights.
+             * Furthermore, due to the lag in creating the source, the first attempt to write to it might fail.
+             * Thus, we should have already done this during the program's installation, this is just in case it was missed. */
             if (!EventLog.SourceExists(eventLogSource, machineName))
                 EventLog.CreateEventSource(eventLogSource, eventLogName, machineName);
-            EventLog eventLogger = new EventLog(eventLogName, machineName, eventLogSource);
+            eventLogger = new EventLog(eventLogName, machineName, eventLogSource);
+            eventLogger.WriteEntry("LogChipper syslog forwarding service has started", EventLogEntryType.Information, 0);
 
-            eventLogger.WriteEntry("LogChipper.NET service starting up", EventLogEntryType.Information, 0);
+            // prep for posting to remote syslog
+            syslogForwarder = new Syslog.Client(
+                (string)Properties.Settings.Default.syslogServer,
+                (int)Properties.Settings.Default.syslogPort,
+                (int)Syslog.Facility.Syslog,
+                (int)Syslog.Level.Information);
+            syslogForwarder.Send("[LogChipper syslog forwarding service has started]");
 
-            // TODO: prep for posting to syslog
-            //Syslog.Client c = new Syslog.Client();
-            //c.HostIp = "127.0.0.1";
-            //int facility = (int)Syslog.Facility.Syslog;
-            //int level = (int)Syslog.Level.Warning;
-            //string text = "Hello from LogChipperSvc";
-            //c.Send(new Syslog.Message(facility, level, text));
-            //c.Close();
-
-            // fetch properties from exe.config, for convenience
+            // prep to tail the local log file
             string fileName = Properties.Settings.Default.logFilePath;
-            int pauseInMS = Properties.Settings.Default.pauseInMilliseconds;
+
+            if (!File.Exists(fileName))
+            {
+                bool found = false;
+
+                // re-test every minute for 15 minutes
+                for (int i = 0; i < 15; i++)
+                {
+                    eventLogger.WriteEntry("Target log file not found; please check the configuration.", EventLogEntryType.Warning, 2);
+                    System.Threading.Thread.Sleep(60 * 1000);
+                    if (File.Exists(fileName))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                // TODO: currently we exit if the file is not found within 15 minutes; or should we let it loop perpetually instead?
+                if (!found)
+                {
+                    eventLogger.WriteEntry("Target log file still doesn't exist; exiting service.", EventLogEntryType.Error, 404);
+                    Environment.Exit(1); //end it all
+                }
+            }
 
             try
             {
@@ -59,7 +78,7 @@ namespace LogChipperSvc
 
                     while (true)
                     {
-                        System.Threading.Thread.Sleep(pauseInMS);
+                        System.Threading.Thread.Sleep(Properties.Settings.Default.pauseInMilliseconds);
 
                         // if the file size has not changed, keep idling
                         if (reader.BaseStream.Length == lastMaxOffset)
@@ -71,7 +90,7 @@ namespace LogChipperSvc
                         // read out of the file until the EOF
                         string line = "";
                         while ((line = reader.ReadLine()) != null)
-                            Console.WriteLine(line); // TODO: post to syslog
+                            syslogForwarder.Send(line);
 
                         // update the last max offset
                         lastMaxOffset = reader.BaseStream.Position;
@@ -80,17 +99,19 @@ namespace LogChipperSvc
             }
             catch (IOException e)
             {
-                eventLogger.WriteEntry(e.ToString(), EventLogEntryType.Warning, 2);
-                // TODO: pause, then try loading the file again; write to event log
-                // Q: should we stop after a certain number of failures?
+                eventLogger.WriteEntry("IO error: " + e.ToString(), EventLogEntryType.Error, 21);
+                // TODO: currently we exit on all IOExceptions; should we try reloading the file first?
+                Environment.Exit(1); //end it all
             }
             catch (Exception e)
             {
-                eventLogger.WriteEntry(e.ToString(), EventLogEntryType.Error, 1);
-                // Q: do we want to quit or continue here?
+                eventLogger.WriteEntry("Unexpected error: " + e.ToString(), EventLogEntryType.Error, 1);
+                Environment.Exit(1); //end it all
             }
             finally
             {
+                if (syslogForwarder != null)
+                    syslogForwarder.Close();
                 if (reader != null)
                     reader.Close();
             }
@@ -98,6 +119,8 @@ namespace LogChipperSvc
 
         protected override void OnStop()
         {
+            if (syslogForwarder != null)
+                syslogForwarder.Close(); 
             if (reader != null)
                 reader.Close();
         }

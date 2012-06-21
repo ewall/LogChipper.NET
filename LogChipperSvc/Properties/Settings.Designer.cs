@@ -34,7 +34,7 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
         public string syslogServer {
             get {
                 return ((string)(this["syslogServer"]));
@@ -43,10 +43,10 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string syslogPort {
+        [global::System.Configuration.DefaultSettingValueAttribute("514")]
+        public int syslogPort {
             get {
-                return ((string)(this["syslogPort"]));
+                return ((int)(this["syslogPort"]));
             }
         }
         

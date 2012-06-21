@@ -1,0 +1,14 @@
+LogChipper.NET v??? by ewall, June 2012
+(c)2012 Eric W. Wallace / MaineHealth
+
+Description:
+  Tails a log file and sends all writes to a remote syslog daemon.
+
+Usage:
+  Runs as a Windows service, which is configured during the setup (included).
+
+Requires:
+  .NET Framework 3.5
+
+Version History:
+  n/a

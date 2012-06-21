@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Xml;
 
 namespace LogChipperSvc
 {
@@ -32,25 +34,39 @@ namespace LogChipperSvc
         {
             base.Install(stateSaver);
 
+            // save install-time user input into config file
             string targetDirectory = Context.Parameters["targetdir"];
             string param1 = Context.Parameters["param1"];
             string param2 = Context.Parameters["param2"];
             string param3 = Context.Parameters["param3"];
 
             string path = System.IO.Path.Combine(targetDirectory, "LogChipperSvc.exe.config");
-            System.Xml.XmlDocument xDoc = new System.Xml.XmlDocument();
+            XmlDocument xDoc = new XmlDocument();
             xDoc.Load(path);
 
-            System.Xml.XmlNode node1 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='logFilePath']/value");
+            XmlNode node1 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='logFilePath']/value");
             node1.InnerText = param1;
 
-            System.Xml.XmlNode node2 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='syslogServer']/value");
+            XmlNode node2 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='syslogServer']/value");
             node2.InnerText = param2;
 
-            System.Xml.XmlNode node3 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='syslogPort']/value");
+            XmlNode node3 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='syslogPort']/value");
             node3.InnerText = param3;
 
             xDoc.Save(path);
+
+            // create the Event Log source if needed
+            //   this is best done during install because (a) we should already have admin rights, and (b) there's a lag before you can use it
+            string machineName = ".";
+
+            XmlNode node4 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='eventLogName']/value");
+            string eventLogName = node4.InnerText;
+
+            XmlNode node5 = xDoc.SelectSingleNode("/configuration/applicationSettings/LogChipperSvc.Properties.Settings/setting[@name='eventLogSource']/value");
+            string eventLogSource = node5.InnerText;
+
+            if (!EventLog.SourceExists(eventLogSource, machineName))
+                EventLog.CreateEventSource(eventLogSource, eventLogName, machineName);       
         }
 
     }
