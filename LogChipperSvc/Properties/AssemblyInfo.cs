@@ -11,7 +11,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Eric W. Wallace")]
 [assembly: AssemblyProduct("LogChipper")]
-[assembly: AssemblyCopyright("Copyright © Eric W. Wallace 2012")]
+[assembly: AssemblyCopyright("Copyright © Eric W. Wallace & MaineHealth 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

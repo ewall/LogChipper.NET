@@ -27,10 +27,10 @@ namespace LogChipperSvc
             /* Warning: this will definately fail to create the source if the account lacks administrator/UAC rights.
              * Furthermore, due to the lag in creating the source, the first attempt to write to it might fail.
              * Thus, we should have already done this during the program's installation, this is just in case it was missed. */
-            if (!EventLog.SourceExists(eventLogSource, machineName))
-                EventLog.CreateEventSource(eventLogSource, eventLogName);
+            //if (!EventLog.SourceExists(eventLogSource, machineName))
+            //    EventLog.CreateEventSource(eventLogSource, eventLogName);
             eventLogger = new EventLog(eventLogName, machineName, eventLogSource);
-            eventLogger.WriteEntry("LogChipper syslog forwarding service has started", EventLogEntryType.Information, 0);
+            eventLogger.WriteEntry("LogChipper syslog forwarding service has started.", EventLogEntryType.Information, 0);
 
             // prep for posting to remote syslog
             syslogForwarder = new Syslog.Client(
@@ -38,7 +38,7 @@ namespace LogChipperSvc
                 (int)Properties.Settings.Default.syslogPort,
                 (int)Syslog.Facility.Syslog,
                 (int)Syslog.Level.Information);
-            syslogForwarder.Send("[LogChipper syslog forwarding service has started]");
+            syslogForwarder.Send("[LogChipper syslog forwarding service has started.]");
 
             // prep to tail the local log file
             string fileName = Properties.Settings.Default.logFilePath;
@@ -117,10 +117,28 @@ namespace LogChipperSvc
             }
         }
 
-        protected override void OnStop()
+        protected override void OnPause()
         {
             if (syslogForwarder != null)
-                syslogForwarder.Close(); 
+                syslogForwarder.Send("[LogChipper syslog forwarding service has been paused.]");
+            eventLogger.WriteEntry("LogChipper syslog forwarding service has been paused.", EventLogEntryType.Information, 0);
+        }
+
+        protected override void OnContinue()
+        {
+            if (syslogForwarder != null)
+                syslogForwarder.Send("[LogChipper syslog forwarding service is continuing.]");
+            eventLogger.WriteEntry("LogChipper syslog forwarding service is continuing.", EventLogEntryType.Information, 0);
+        }
+
+        protected override void OnStop()
+        {
+            eventLogger.WriteEntry("LogChipper syslog forwarding service has been stopped.", EventLogEntryType.Information, 0);
+            if (syslogForwarder != null)
+            {
+                syslogForwarder.Send("[LogChipper syslog forwarding service has been stopped.]");
+                syslogForwarder.Close();
+            }
             if (reader != null)
                 reader.Close();
         }

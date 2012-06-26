@@ -40,7 +40,9 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.ServiceName = "LogChipperSvc";
+            this.serviceInstaller1.Description = "Tails a log file and sends any new lines to a remote syslog daemon.";
+            this.serviceInstaller1.DisplayName = "LogChipper";
+            this.serviceInstaller1.ServiceName = "LogChipper";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller

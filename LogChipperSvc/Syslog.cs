@@ -57,8 +57,7 @@ namespace Syslog
 
     public class Client
     {
-        private IPHostEntry ipHostInfo;
-        private IPAddress ipAddress;
+        private IPAddress ipLocal;
         private IPEndPoint ipLocalEndPoint;
         private Syslog.Client.Helper helper;
 
@@ -83,9 +82,8 @@ namespace Syslog
         #region constructors
         public Client()
         {
-            ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            ipAddress = ipHostInfo.AddressList[0];
-            ipLocalEndPoint = new IPEndPoint(ipAddress, 0);
+            ipLocal = IPAddress.Parse(GetMyIp());
+            ipLocalEndPoint = new IPEndPoint(ipLocal, 0);
             helper = new Syslog.Client.Helper(ipLocalEndPoint);
         }
 
@@ -145,6 +143,21 @@ namespace Syslog
         public bool IsActive
         {
             get { return helper.IsActive; }
+        }
+
+        public string GetMyIp()
+        {
+            IPHostEntry host;
+            string localIP = "?";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                }
+            }
+            return localIP;
         }
 
         // Send() original method
