@@ -25,7 +25,7 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("UNDEFINED")]
         public string logFilePath {
             get {
                 return ((string)(this["logFilePath"]));
@@ -70,10 +70,19 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("LogChipper.NET")]
+        [global::System.Configuration.DefaultSettingValueAttribute("LogChipper")]
         public string eventLogSource {
             get {
                 return ((string)(this["eventLogSource"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("UDP")]
+        public string syslogProtocol {
+            get {
+                return ((string)(this["syslogProtocol"]));
             }
         }
     }

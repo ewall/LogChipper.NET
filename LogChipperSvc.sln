@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogChipperSvc", "LogChipperSvc\LogChipperSvc.csproj", "{F92F71EE-E3AF-4353-9326-120852CAA96D}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LogChipperSvcSetup", "LogChipperSvcSetup\LogChipperSvcSetup.vdproj", "{1559F5CA-08CF-46C4-A134-B61447A24040}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LogChipperSetup", "LogChipperSetup\LogChipperSetup.vdproj", "{3F69B04C-D9B5-4C18-887F-A7DC487F14BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +15,10 @@ Global
 		{F92F71EE-E3AF-4353-9326-120852CAA96D}.Debug|x86.Build.0 = Debug|x86
 		{F92F71EE-E3AF-4353-9326-120852CAA96D}.Release|x86.ActiveCfg = Release|x86
 		{F92F71EE-E3AF-4353-9326-120852CAA96D}.Release|x86.Build.0 = Release|x86
-		{1559F5CA-08CF-46C4-A134-B61447A24040}.Debug|x86.ActiveCfg = Debug
-		{1559F5CA-08CF-46C4-A134-B61447A24040}.Release|x86.ActiveCfg = Release
+		{3F69B04C-D9B5-4C18-887F-A7DC487F14BE}.Debug|x86.ActiveCfg = Debug
+		{3F69B04C-D9B5-4C18-887F-A7DC487F14BE}.Debug|x86.Build.0 = Debug
+		{3F69B04C-D9B5-4C18-887F-A7DC487F14BE}.Release|x86.ActiveCfg = Release
+		{3F69B04C-D9B5-4C18-887F-A7DC487F14BE}.Release|x86.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

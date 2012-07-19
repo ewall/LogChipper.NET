@@ -57,39 +57,14 @@ namespace Syslog
 
     public class Client
     {
-        private IPAddress ipLocal;
-        private IPEndPoint ipLocalEndPoint;
-        private Syslog.Client.Helper helper;
-
-        #region helper
-        // Helper class exposes the UdpClient's "Active" propery
-        private class Helper : System.Net.Sockets.UdpClient
-        {
-            public Helper() : base() { }
-            public Helper(IPEndPoint ipe) : base(ipe) { }
-            ~Helper()
-            {
-                if (this.Active) this.Close();
-            }
-
-            public bool IsActive
-            {
-                get { return this.Active; }
-            }
-        }
-        #endregion helper
+        private string    _hostIp;
+        private int       _port;
+        private UdpClient _socket;
 
         #region constructors
-        public Client()
-        {
-            ipLocal = IPAddress.Parse(GetMyIp());
-            ipLocalEndPoint = new IPEndPoint(ipLocal, 0);
-            helper = new Syslog.Client.Helper(ipLocalEndPoint);
-        }
-
         public Client(string server, int port)
-            : this()
         {
+            this._socket = new UdpClient(server, port);
             this._hostIp = server;
             this._port = port;
         }
@@ -103,75 +78,28 @@ namespace Syslog
         #endregion constructors
 
         #region properties
-        private string _hostIp = null;
-        public string HostIp
-        {
-            get { return _hostIp; }
-            set
-            {
-                if ((_hostIp == null) && (!IsActive))
-                {
-                    _hostIp = value;
-                    //helper.Connect(_hostIp, _port);
-                }
-            }
-        }
-
-        private int _port = 514;
-        public int Port
-        {
-            get { return _port; }
-            set { _port = value; }
-        }
-
         private int _defaultFacility = (int)Facility.Syslog;
-        public int DefaultFacility
-        {
-            get { return _defaultFacility; }
-            set { _defaultFacility = DefaultFacility; }
-        }
+        public int DefaultFacility { get; set; }
 
         private int _defaultLevel = (int)Level.Warning;
-        public int DefaultLevel
-        {
-            get { return _defaultLevel; }
-            set { _defaultLevel = DefaultLevel; }
-        }
+        public int DefaultLevel { get; set; }
         #endregion properties
 
         #region methods
-        public bool IsActive
-        {
-            get { return helper.IsActive; }
-        }
-
-        public string GetMyIp()
-        {
-            IPHostEntry host;
-            string localIP = "?";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    localIP = ip.ToString();
-                }
-            }
-            return localIP;
-        }
-
-        // Send() original method
+        // Send() long form with enum
         public void Send(Syslog.Message message)
         {
-            if (!helper.IsActive)
-                helper.Connect(_hostIp, _port);
-            if (helper.IsActive)
+
+            string msg = System.String.Format("<{0}>{1}", message.Facility * 8 + message.Level, message.Text);
+            byte[] sendBytes = System.Text.Encoding.ASCII.GetBytes(msg);
+            try
             {
-                string msg = System.String.Format("<{0}>{1}", message.Facility * 8 + message.Level, message.Text);
-                byte[] bytes = System.Text.Encoding.ASCII.GetBytes(msg);
-                helper.Send(bytes, bytes.Length);
+                _socket.Send(sendBytes, sendBytes.Length);
             }
-            else throw new Exception("Syslog client socket is not connected. Please double-check that the host IP and port are set correctly.");
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         // Send() simplified overload uses previously set default facility & level
@@ -184,7 +112,7 @@ namespace Syslog
         #region destructors
         public void Close()
         {
-            if (helper.IsActive) helper.Close();
+            _socket.Close();
         }
 
         ~Client()

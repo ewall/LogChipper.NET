@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             // 
-            // LogChipperSvc
+            // LogChipperService
             // 
-            this.ServiceName = "LogChipperSvc";
+            this.ServiceName = "LogChipper";
 
         }
 

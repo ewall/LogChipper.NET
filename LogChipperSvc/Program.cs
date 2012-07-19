@@ -9,12 +9,7 @@ namespace LogChipperSvc
         /// </summary>
         static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-            { 
-                new LogChipperService() 
-            };
-            ServiceBase.Run(ServicesToRun);
+            ServiceBase.Run( new LogChipperService() );
         }
     }
 }

@@ -1,4 +1,4 @@
-LogChipper.NET v??? by ewall, June 2012
+LogChipper.NET v??? by ewall, June-July 2012
 (c)2012 Eric W. Wallace / MaineHealth
 
 Description:
@@ -12,3 +12,7 @@ Requires:
 
 Version History:
   n/a
+  
+TODO:
+  - separate worker thread
+  - add TCP support

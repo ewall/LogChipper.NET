@@ -36,12 +36,11 @@
             this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.NetworkService;
             this.serviceProcessInstaller1.Password = null;
             this.serviceProcessInstaller1.Username = null;
-            this.serviceProcessInstaller1.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceProcessInstaller1_AfterInstall);
             // 
             // serviceInstaller1
             // 
             this.serviceInstaller1.Description = "Tails a log file and sends any new lines to a remote syslog daemon.";
-            this.serviceInstaller1.DisplayName = "LogChipper";
+            this.serviceInstaller1.DisplayName = "LogChipper Service";
             this.serviceInstaller1.ServiceName = "LogChipper";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
@@ -57,7 +56,5 @@
 
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller1;
         private System.ServiceProcess.ServiceInstaller serviceInstaller1;
-
-        public System.Configuration.Install.InstallEventHandler serviceProcessInstaller1_AfterInstall { get; set; }
     }
 }

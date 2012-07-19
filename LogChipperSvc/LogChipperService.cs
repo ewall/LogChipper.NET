@@ -13,7 +13,12 @@ namespace LogChipperSvc
         private StreamReader reader;
 
         public LogChipperService()
+            : base()
         {
+            ServiceName = "LogChipper";
+            CanHandleSessionChangeEvent = false;
+            CanPauseAndContinue = false;
+            CanShutdown = false;
             InitializeComponent();
         }
 
@@ -141,6 +146,8 @@ namespace LogChipperSvc
             }
             if (reader != null)
                 reader.Close();
+
+            this.ExitCode = 0;
         }
     }
 }

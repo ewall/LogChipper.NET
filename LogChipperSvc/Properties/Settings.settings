@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="logFilePath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">UNDEFINED</Value>
     </Setting>
     <Setting Name="syslogServer" Type="System.String" Scope="Application">
       <Value Profile="(Default)">127.0.0.1</Value>
@@ -18,7 +18,10 @@
       <Value Profile="(Default)">Application</Value>
     </Setting>
     <Setting Name="eventLogSource" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">LogChipper.NET</Value>
+      <Value Profile="(Default)">LogChipper</Value>
+    </Setting>
+    <Setting Name="syslogProtocol" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UDP</Value>
     </Setting>
   </Settings>
 </SettingsFile>
