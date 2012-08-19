@@ -119,7 +119,7 @@
             "Sequence" = "3:1"
             "Identifier" = "8:_08EFA5BF_2CD9_4CD1_BE31_D03FE2C547C1"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /watchfile=\"[EDITA1]\" /server=\"[EDITA2]\" /port=\"[EDITA3]\" /protocol=\"[EDITA4]\""
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_923FC01218874BE38B92DEE7E06F0E01"
             {
@@ -133,7 +133,7 @@
             "Sequence" = "3:1"
             "Identifier" = "8:_C195207C_C430_4A34_95AD_0F57CF169F45"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /logfile=\"[EDITA1]\" /server=\"[EDITA2]\" /port=\"[EDITA3]\" /protocol=\"[EDITA4]\""
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /watchfile=\"[EDITA1]\" /server=\"[EDITA2]\" /port=\"[EDITA3]\" /protocol=\"[EDITA4]\""
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_A74F2A76530D41F2930C2845C5F5DA3B"
             {
@@ -147,7 +147,7 @@
             "Sequence" = "3:1"
             "Identifier" = "8:_F6CED8A4_8343_46F3_A770_9FCB60FCB138"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /watchfile=\"[EDITA1]\" /server=\"[EDITA2]\" /port=\"[EDITA3]\" /protocol=\"[EDITA4]\""
             }
         }
         "DefaultFeature"
@@ -229,7 +229,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:LogChipper"
         "ProductCode" = "8:{973C9203-8E27-432F-B3E1-33004DF993AB}"
-        "PackageCode" = "8:{264A12E7-558B-4E44-AE1C-464D037D4A32}"
+        "PackageCode" = "8:{116BD722-1E71-4D32-BC10-0C022D02AB15}"
         "UpgradeCode" = "8:{F2110DEF-4921-4270-8235-963C8380AA13}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1006,7 +1006,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_35F49893787346D1985BC208BC77E4CC"
             {
-            "SourcePath" = "8:..\\LogChipperSvc\\obj\\x86\\Debug\\LogChipperSvc.exe"
+            "SourcePath" = "8:..\\LogChipperSvc\\obj\\x86\\Release\\LogChipperSvc.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_338F77B7399743FC93C7680BF48129FA"

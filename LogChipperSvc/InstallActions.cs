@@ -16,6 +16,13 @@ namespace LogChipperSvc
         public InstallActions()
             : base()
         {
+            this.AfterInstall += new InstallEventHandler(InstallActions_AfterInstall);
+            this.BeforeInstall += new InstallEventHandler(InstallActions_BeforeInstall);
+            this.BeforeUninstall += new InstallEventHandler(InstallActions_BeforeUninstall);
+        }
+
+        void InstallActions_BeforeInstall(object sender, InstallEventArgs e)
+        {
             // before installation, create EventLog source if needed
             if (!EventLog.SourceExists("LogChipper"))
             {
@@ -24,23 +31,13 @@ namespace LogChipperSvc
                 eventLogInstaller.Source = "LogChipper"; // TODO: fetch from Properties.Settings.Default.eventLogSource;
                 Installers.Add(eventLogInstaller);
             }
-
-            this.AfterInstall += new InstallEventHandler(InstallActions_AfterInstall);
-            this.BeforeInstall += new InstallEventHandler(InstallActions_BeforeInstall);
-            this.BeforeUninstall += new InstallEventHandler(InstallActions_BeforeUninstall);
-        }
-
-        void InstallActions_BeforeInstall(object sender, InstallEventArgs e)
-        {
-            // before installation, stop existing service
-            SetServiceStatus(false);
         }
 
         void InstallActions_AfterInstall(object sender, InstallEventArgs e)
         {
             // save install-time user input into config file
             string targetDirectory = Context.Parameters["targetdir"];
-            string param1 = Context.Parameters["logfile"];
+            string param1 = Context.Parameters["watchfile"];
             string param2 = Context.Parameters["server"];
             string param3 = Context.Parameters["port"];
             string param4 = Context.Parameters["protocol"];
