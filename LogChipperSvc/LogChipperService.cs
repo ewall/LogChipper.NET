@@ -11,7 +11,7 @@ namespace LogChipperSvc
     {
         private EventLog eventLogger;
         private Syslog.Client syslogForwarder;
-        private string fileName;
+        private string fileName = Properties.Settings.Default.logFilePath;
         private Thread workerThread = null;
         private static ManualResetEvent pause = new ManualResetEvent(true);
         private StreamReader reader;
@@ -22,7 +22,7 @@ namespace LogChipperSvc
             CanHandleSessionChangeEvent = false;
             CanPauseAndContinue = false;
             CanShutdown = true;
-            CanStop = true;
+            CanStop = (bool)Properties.Settings.Default.svcCanStop;
 
             InitializeComponent();
         }
@@ -33,7 +33,7 @@ namespace LogChipperSvc
         //    this.CanHandleSessionChangeEvent = false;
         //    this.CanPauseAndContinue = false;
         //    this.CanShutdown = true;
-        //    this.CanStop = true;
+        //    this.CanStop = Properties.Settings.Default.svcCanStop;
         //}
 
         protected override void OnStart(string[] args)
@@ -47,21 +47,24 @@ namespace LogChipperSvc
             eventLogger.WriteEntry("LogChipper syslog forwarding service has started.", EventLogEntryType.Information, 0);
 
             // prep for posting to remote syslog
+            bool useTCP = Properties.Settings.Default.syslogProtocol.ToUpper().Contains("TCP");
             syslogForwarder = new Syslog.Client(
                 (string)Properties.Settings.Default.syslogServer,
                 (int)Properties.Settings.Default.syslogPort,
+                useTCP,
                 (int)Syslog.Facility.Syslog,
                 (int)Syslog.Level.Information);
             syslogForwarder.Send("[LogChipper syslog forwarding service has started.]");
 
             // prep to tail the local log file
-            fileName = Properties.Settings.Default.logFilePath;
+            //fileName = Properties.Settings.Default.logFilePath;
             if (!File.Exists(fileName))
             {
-                eventLogger.WriteEntry("Target log file still doesn't exist; exiting service.", EventLogEntryType.Error, 404);
-                this.OnStop(); // TODO: correct way to exit?
+                eventLogger.WriteEntry("Cannot locate target log file; exiting service.", EventLogEntryType.Error, 404);
+                this.Stop();
+                Environment.Exit(404); // not very graceful, but prevents more error messages from continuing OnStart after OnStop
 
-                //    // TODO: handle missing target file more gracefully
+                // TODO: handle missing target file more gracefully
                 //    bool found = false;
                 //
                 //    // re-test every minute for 15 minutes
@@ -103,6 +106,7 @@ namespace LogChipperSvc
             }
 
             eventLogger.WriteEntry("LogChipper syslog forwarding service has been stopped.", EventLogEntryType.Information, 0);
+            
             if (syslogForwarder != null)
             {
                 syslogForwarder.Send("[LogChipper syslog forwarding service has been stopped.]");
@@ -127,6 +131,7 @@ namespace LogChipperSvc
                 {
                     //start at the end of the file
                     long lastMaxOffset = reader.BaseStream.Length;
+                    // TODO: minor bug: sometimes when continuing, the first line reported is oddly prefixed with "<46>"
 
                     while (true)
                     {
@@ -135,6 +140,11 @@ namespace LogChipperSvc
                         // if the file size has not changed, keep idling
                         if (reader.BaseStream.Length == lastMaxOffset)
                             continue;
+
+                        // handle if the file contents have been cleared
+                        if (reader.BaseStream.Length < lastMaxOffset)
+                            lastMaxOffset = 0;
+                        eventLogger.WriteEntry("LogChipper target file was reset, starting from beginning", EventLogEntryType.Information, 0);
 
                         // seek to the last max offset
                         reader.BaseStream.Seek(lastMaxOffset, SeekOrigin.Begin);
@@ -146,7 +156,6 @@ namespace LogChipperSvc
 
                         // update the last max offset
                         lastMaxOffset = reader.BaseStream.Position;
-                        // TODO: handle if the file contents have been cleared
 
                         // block if the service is paused or is shutting down
                         pause.WaitOne();
@@ -162,12 +171,12 @@ namespace LogChipperSvc
             {
                 eventLogger.WriteEntry("IO error: " + e.ToString(), EventLogEntryType.Error, 21);
                 // TODO: currently we exit on all IOExceptions; should we try reloading the file first?
-                this.OnStop(); // TODO: correct way to exit?
+                this.Stop();
             }
             catch (Exception e)
             {
                 eventLogger.WriteEntry("Unexpected error: " + e.ToString(), EventLogEntryType.Error, 1);
-                this.OnStop(); // TODO: correct way to exit?
+                this.Stop();
             }
             finally
             {

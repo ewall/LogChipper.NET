@@ -27,8 +27,8 @@ namespace LogChipperSvc
             if (!EventLog.SourceExists("LogChipper"))
             {
                 EventLogInstaller eventLogInstaller = new EventLogInstaller();
-                eventLogInstaller.Log = "Application"; // TODO: fetch from Properties.Settings.Default.eventLogName;
-                eventLogInstaller.Source = "LogChipper"; // TODO: fetch from Properties.Settings.Default.eventLogSource;
+                eventLogInstaller.Log = Properties.Settings.Default.eventLogName; // "Application"
+                eventLogInstaller.Source = Properties.Settings.Default.eventLogSource; // "LogChipper"
                 Installers.Add(eventLogInstaller);
             }
         }
@@ -36,6 +36,8 @@ namespace LogChipperSvc
         void InstallActions_AfterInstall(object sender, InstallEventArgs e)
         {
             // save install-time user input into config file
+            // TODO: you can specify EDITA1 - EDITA4 on the msiexec command line; but can I set default values?
+            //   probably need to do in with Orca (or VBScript) as a post-build event
             string targetDirectory = Context.Parameters["targetdir"];
             string param1 = Context.Parameters["watchfile"];
             string param2 = Context.Parameters["server"];
@@ -66,7 +68,7 @@ namespace LogChipperSvc
             catch { }
 
             // automatically start the service after installation
-            //SetServiceStatus(true); //BREAKS INSTALL?
+            //SetServiceStatus(true); // TODO: why does starting the service cause the install to fail?!?
         }
 
         void InstallActions_BeforeUninstall(object sender, InstallEventArgs e)

@@ -57,20 +57,33 @@ namespace Syslog
 
     public class Client
     {
-        private string    _hostIp;
-        private int       _port;
-        private UdpClient _socket;
+        private string        _hostIp;
+        private int           _port;
+        private bool          _useTCP;
+        private UdpClient     _udpSocket;
+        private TcpClient     _tcpSocket;
+        private NetworkStream _stream;
 
         #region constructors
-        public Client(string server, int port)
+        public Client(string server, int port, bool tcp)
         {
-            this._socket = new UdpClient(server, port);
             this._hostIp = server;
             this._port = port;
+            this._useTCP = tcp;
+            if (_useTCP)
+            {
+                this._tcpSocket = new TcpClient(_hostIp, _port);
+                this._stream = _tcpSocket.GetStream();
+                this._tcpSocket.LingerState = new LingerOption(true, 30);
+            }
+            else
+            {
+                this._udpSocket = new UdpClient(_hostIp, _port);
+            }
         }
 
-        public Client(string server, int port, int facility, int level)
-            : this(server, port)
+        public Client(string server, int port, bool tcp, int facility, int level)
+            : this(server, port, tcp)
         {
             this._defaultFacility = facility;
             this._defaultLevel = level;
@@ -89,16 +102,48 @@ namespace Syslog
         // Send() long form with enum
         public void Send(Syslog.Message message)
         {
-
             string msg = System.String.Format("<{0}>{1}", message.Facility * 8 + message.Level, message.Text);
             byte[] sendBytes = System.Text.Encoding.ASCII.GetBytes(msg);
-            try
+
+            // TODO: change to use asynchronous sending?
+
+            if (_useTCP)
             {
-                _socket.Send(sendBytes, sendBytes.Length);
+                bool success = false;
+                do
+                {
+                    try
+                    {
+                        _stream.Write(sendBytes, 0, sendBytes.Length);
+                        _stream.Flush();
+                        success = _tcpSocket.Connected;
+                    }
+                    catch (SocketException e)
+                    {
+                        // 10035 == WSAEWOULDBLOCK i.e. already connected
+                        if (e.NativeErrorCode != 10035)
+                        {
+                            //_tcpSocket.Connect(_hostIp, _port); // no, need to establish fresh new connection
+                            if (_stream != null) _stream.Close();
+                            if (_tcpSocket != null) _tcpSocket.Close();
+                            _tcpSocket = new TcpClient(_hostIp, _port);
+                            _stream = _tcpSocket.GetStream();
+                            _tcpSocket.LingerState = new LingerOption(true, 30);
+                        }
+                    }
+                    catch (ObjectDisposedException e)
+                    {
+                        if (_stream != null) _stream.Close();
+                        if (_tcpSocket != null) _tcpSocket.Close();
+                        _tcpSocket = new TcpClient(_hostIp, _port);
+                        _stream = _tcpSocket.GetStream();
+                        _tcpSocket.LingerState = new LingerOption(true, 30);
+                    }
+                } while (!success);
             }
-            catch (Exception e)
+            else
             {
-                throw e;
+                _udpSocket.Send(sendBytes, sendBytes.Length);
             }
         }
 
@@ -112,7 +157,15 @@ namespace Syslog
         #region destructors
         public void Close()
         {
-            _socket.Close();
+            if (_useTCP)
+            {
+                _stream.Close();
+                _tcpSocket.Close();
+            }
+            else
+            {
+                _udpSocket.Close();
+            }
         }
 
         ~Client()
@@ -120,6 +173,8 @@ namespace Syslog
             Close();
         }
         #endregion destuctors
+
+        // TODO: support callback for detailed logging?
     }
 
     public class DemoClient
@@ -128,7 +183,7 @@ namespace Syslog
         public static void Main(string[] args)
         {
 
-            Syslog.Client c = new Syslog.Client("127.0.0.1", 514, (int)Syslog.Facility.Syslog, (int)Syslog.Level.Warning);
+            Syslog.Client c = new Syslog.Client("127.0.0.1", 514, false, (int)Syslog.Facility.Syslog, (int)Syslog.Level.Warning);
             try
             {
                 c.Send("This is a test of the syslog client code.");

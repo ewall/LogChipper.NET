@@ -25,7 +25,7 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("UNDEFINED")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string logFilePath {
             get {
                 return ((string)(this["logFilePath"]));
@@ -79,10 +79,19 @@ namespace LogChipperSvc.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("UDP")]
+        [global::System.Configuration.DefaultSettingValueAttribute("TCP")]
         public string syslogProtocol {
             get {
                 return ((string)(this["syslogProtocol"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool svcCanStop {
+            get {
+                return ((bool)(this["svcCanStop"]));
             }
         }
     }

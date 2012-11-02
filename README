@@ -1,4 +1,4 @@
-LogChipper.NET v??? by ewall, June-July 2012
+LogChipper.NET v1.0.0 by ewall, November 2012
 (c)2012 Eric W. Wallace / MaineHealth
 
 Description:
@@ -11,8 +11,10 @@ Requires:
   .NET Framework 3.5
 
 Version History:
-  n/a
+  1.0.0 - initial release
   
-TODO:
-  - separate worker thread
-  - add TCP support
+TODO/Wishlist:
+  - handle missing watch file more gracefully (e.g. add retries, etc.)
+  - change to use asynchronous send methods
+  - queue up messages if destination server unavailable
+  - add support for logging callbacks in Syslog class

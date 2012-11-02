@@ -229,7 +229,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:LogChipper"
         "ProductCode" = "8:{973C9203-8E27-432F-B3E1-33004DF993AB}"
-        "PackageCode" = "8:{116BD722-1E71-4D32-BC10-0C022D02AB15}"
+        "PackageCode" = "8:{A2C93BD8-DB49-46EF-AF80-5C0B3E01F934}"
         "UpgradeCode" = "8:{F2110DEF-4921-4270-8235-963C8380AA13}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -367,7 +367,7 @@
                 {
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_02E4BAC6080C4EB9AC80B6FDAAF362DA"
                     {
-                    "Sequence" = "3:300"
+                    "Sequence" = "3:400"
                     "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -437,7 +437,7 @@
                     }
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_55318C3CC74F490C8D60A41D06590254"
                     {
-                    "Sequence" = "3:110"
+                    "Sequence" = "3:200"
                     "DisplayName" = "8:Textboxes   (A)"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
@@ -515,8 +515,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:"
+                            "Setting" = "3:2"
+                            "Value" = "8:[EDITA1]"
                             "DefaultValue" = "8:"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -567,8 +567,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:"
+                            "Setting" = "3:2"
+                            "Value" = "8:[EDITA2]"
                             "DefaultValue" = "8:"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -620,7 +620,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:514"
+                            "Value" = "8:[EDITA3]"
                             "DefaultValue" = "8:"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -646,7 +646,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:Protcol (UDP or TCP):"
+                            "Value" = "8:Protocol (UDP or TCP):"
                             "DefaultValue" = "8:#1249"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -672,7 +672,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:TCP"
+                            "Value" = "8:[EDITA4]"
                             "DefaultValue" = "8:"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -693,7 +693,7 @@
                     }
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_834017F0C3BD4DCE869421A9954B334D"
                     {
-                    "Sequence" = "3:200"
+                    "Sequence" = "3:300"
                     "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"

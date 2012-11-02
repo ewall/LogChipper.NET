@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="logFilePath" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">UNDEFINED</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="syslogServer" Type="System.String" Scope="Application">
       <Value Profile="(Default)">127.0.0.1</Value>
@@ -21,7 +21,10 @@
       <Value Profile="(Default)">LogChipper</Value>
     </Setting>
     <Setting Name="syslogProtocol" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">UDP</Value>
+      <Value Profile="(Default)">TCP</Value>
+    </Setting>
+    <Setting Name="svcCanStop" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
